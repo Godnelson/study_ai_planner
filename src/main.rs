@@ -107,12 +107,12 @@ async fn main() -> Result<()> {
         .nest("/", api_router)
         .fallback_service(ServeDir::new("static"));
 
-    let port: u16 = env::var("PORT")
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(3000);
+    // let port: u16 = env::var("PORT")
+    //     .ok()
+    //     .and_then(|p| p.parse().ok())
+    //     .unwrap_or(3000);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     println!("🚀 Servindo em http://{addr}");
 
     axum::serve(tokio::net::TcpListener::bind(addr).await?, app).await?;

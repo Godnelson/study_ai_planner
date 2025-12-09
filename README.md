@@ -14,8 +14,8 @@ O **Study AI Planner** é um planejador diário de estudos que gera rotinas pers
 
 ## 🚀 Demonstração
 
-🔗 **Link da aplicação**: *(adicione após o deploy)*  
-📸 **Screenshot**: *(adicione aqui uma imagem depois)*
+🔗 **Link da aplicação**: *https://study-ai-planner.onrender.com*  
+📸 **Screenshot**: ![Captura de tela 2025-12-09 033659.png](../../OneDrive/Imagens/Screenshots/Captura%20de%20tela%202025-12-09%20033659.png)
 
 ---
 
