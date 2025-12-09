@@ -92,27 +92,36 @@ struct ResponseContentItem {
     text: String,
 }
 
+
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() {
+    if let Err(err) = run().await {
+        eprintln!("❌ Erro fatal ao subir o servidor: {err:#}");
+        std::process::exit(1);
+    }
+}
+
+async fn run() -> Result<()> {
+    println!("🧪 Inicializando servidor...");
     dotenv().ok();
 
-    println!("🧪 Inicializando servidor...");
     println!("PORT = {:?}", env::var("PORT"));
+
+    let port: u16 = env::var("PORT")
+        .unwrap_or_else(|_| "3000".to_string())
+        .parse()
+        .unwrap_or(3000);
 
     let api_router = Router::new().route("/api/plan", post(create_plan_handler));
     let app = Router::new()
         .nest("/", api_router)
         .fallback_service(ServeDir::new("static"));
 
-    let port: u16 = env::var("PORT")
-        .unwrap_or_else(|_| "3000".to_string()) // local = 3000
-        .parse()
-        .unwrap_or(3000);
-
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     println!("🚀 Servindo em http://{addr}");
 
-    axum::serve(tokio::net::TcpListener::bind(addr).await?, app).await?;
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    axum::serve(listener, app).await?;
 
     Ok(())
 }
