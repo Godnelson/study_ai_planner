@@ -36,5 +36,4 @@ RUN chmod +x /app/study_ai_planner
 ENV PORT=3000
 EXPOSE 3000
 
-# 👇 ESSENCIAL pro Render: comando explícito
 CMD ["/app/study_ai_planner"]
