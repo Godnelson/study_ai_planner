@@ -1,11 +1,5 @@
 use anyhow::{anyhow, Result};
-use axum::{
-    extract::Json,
-    http::StatusCode,
-    response::IntoResponse,
-    routing::post,
-    Router,
-};
+use axum::{extract::Json, http::StatusCode, response::IntoResponse, routing::post, Router};
 use chrono::{Duration, NaiveTime};
 use dotenvy::dotenv;
 use reqwest::Client;
@@ -60,8 +54,8 @@ struct UiBlock {
 /// Resposta enviada ao frontend
 #[derive(Debug, Serialize)]
 struct PlanResponse {
-    mode: String,          // "ai" ou "local"
-    blocks: Vec<UiBlock>,  // blocos calculados
+    mode: String,         // "ai" ou "local"
+    blocks: Vec<UiBlock>, // blocos calculados
 }
 
 /// Bloco retornado pela IA
@@ -102,17 +96,20 @@ struct ResponseContentItem {
 async fn main() -> Result<()> {
     dotenv().ok();
 
+    println!("🧪 Inicializando servidor...");
+    println!("PORT = {:?}", env::var("PORT"));
+
     let api_router = Router::new().route("/api/plan", post(create_plan_handler));
     let app = Router::new()
         .nest("/", api_router)
         .fallback_service(ServeDir::new("static"));
 
-    // let port: u16 = env::var("PORT")
-    //     .ok()
-    //     .and_then(|p| p.parse().ok())
-    //     .unwrap_or(3000);
+    let port: u16 = env::var("PORT")
+        .unwrap_or_else(|_| "3000".to_string()) // local = 3000
+        .parse()
+        .unwrap_or(3000);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     println!("🚀 Servindo em http://{addr}");
 
     axum::serve(tokio::net::TcpListener::bind(addr).await?, app).await?;
@@ -121,9 +118,7 @@ async fn main() -> Result<()> {
 }
 
 /// Handler HTTP: recebe JSON, tenta IA, cai em fallback local se der erro
-async fn create_plan_handler(
-    Json(req): Json<PlanRequest>,
-) -> impl IntoResponse {
+async fn create_plan_handler(Json(req): Json<PlanRequest>) -> impl IntoResponse {
     match create_plan(req).await {
         Ok(resp) => (StatusCode::OK, Json(resp)).into_response(),
         Err(err) => {
@@ -150,26 +145,23 @@ async fn create_plan(req: PlanRequest) -> Result<PlanResponse> {
         })
         .collect();
 
-    let start_time =
-        NaiveTime::parse_from_str(&req.start_time, "%H:%M").unwrap_or_else(|_| NaiveTime::from_hms_opt(8, 0, 0).unwrap());
+    let start_time = NaiveTime::parse_from_str(&req.start_time, "%H:%M")
+        .unwrap_or_else(|_| NaiveTime::from_hms_opt(8, 0, 0).unwrap());
 
     let total_minutes = (req.total_hours * 60.0) as u32;
 
     // Tentar IA se use_ai = true
     if req.use_ai {
-        match call_openai_and_get_plan(&subjects, req.total_hours, start_time, req.focus.clone()).await {
+        match call_openai_and_get_plan(&subjects, req.total_hours, start_time, req.focus.clone())
+            .await
+        {
             Ok(ai_plan) => {
                 // Converter AiPlan -> UiBlock (calculando minutos pela diferença de horários)
                 let mut ui_blocks = Vec::new();
                 for b in ai_plan.blocks {
-                    let start = NaiveTime::parse_from_str(&b.start, "%H:%M")
-                        .unwrap_or(start_time);
-                    let end = NaiveTime::parse_from_str(&b.end, "%H:%M")
-                        .unwrap_or(start);
-                    let minutes = end
-                        .signed_duration_since(start)
-                        .num_minutes()
-                        .max(0) as u32;
+                    let start = NaiveTime::parse_from_str(&b.start, "%H:%M").unwrap_or(start_time);
+                    let end = NaiveTime::parse_from_str(&b.end, "%H:%M").unwrap_or(start);
+                    let minutes = end.signed_duration_since(start).num_minutes().max(0) as u32;
 
                     ui_blocks.push(UiBlock {
                         start: b.start,
@@ -376,7 +368,6 @@ fn generate_schedule(
 
     blocks
 }
-
 
 /// Converte blocos em horários reais para o frontend
 fn blocks_to_ui_blocks(blocks: Vec<Block>, start_time: NaiveTime) -> Vec<UiBlock> {
