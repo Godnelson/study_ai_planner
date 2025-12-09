@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
 use axum::{extract::Json, http::StatusCode, response::IntoResponse, routing::post, Router};
-use chrono::{Duration, NaiveTime};
+use chrono::{NaiveTime};
 use dotenvy::dotenv;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,7 @@ use serde_json::json;
 use std::env;
 use std::net::SocketAddr;
 use tower_http::services::ServeDir;
-
+use tokio::time::{sleep, Duration};
 /// Matéria vinda do frontend
 #[derive(Debug, Clone, Deserialize)]
 struct SubjectInput {
@@ -95,9 +95,9 @@ struct ResponseContentItem {
 
 #[tokio::main]
 async fn main() {
-    if let Err(err) = run().await {
-        eprintln!("❌ Erro fatal ao subir o servidor: {err:#}");
-        std::process::exit(1);
+    loop {
+        println!("🔥 STILL ALIVE");
+        sleep(Duration::from_secs(5)).await;
     }
 }
 
@@ -384,7 +384,7 @@ fn blocks_to_ui_blocks(blocks: Vec<Block>, start_time: NaiveTime) -> Vec<UiBlock
     let mut ui_blocks = Vec::new();
 
     for b in blocks {
-        let end_time = current_time + Duration::minutes(b.minutes as i64);
+        let end_time = current_time + chrono::Duration::minutes(b.minutes as i64);
         ui_blocks.push(UiBlock {
             start: current_time.format("%H:%M").to_string(),
             end: end_time.format("%H:%M").to_string(),
