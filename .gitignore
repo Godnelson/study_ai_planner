@@ -1,0 +1,74 @@
+# ===========================================
+# Rust build artifacts
+# ===========================================
+/target/
+debug/
+release/
+
+# Cargo metadata
+**/*.rs.bk
+Cargo.lock
+
+# ===========================================
+# Editor / IDE configs
+# ===========================================
+# VSCode
+.vscode/
+.history/
+*.code-workspace
+
+# IntelliJ / RustRover
+.idea/
+out/
+
+# ===========================================
+# OS-specific
+# ===========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ===========================================
+# Logs and temp files
+# ===========================================
+*.log
+*.tmp
+*.swp
+
+# ===========================================
+# Docker
+# ===========================================
+docker-compose.override.yml
+docker-data/
+.env.docker
+*.tar
+
+# ===========================================
+# Environment variables
+# ===========================================
+.env
+.env.local
+.env.production
+.env.development
+
+# ===========================================
+# Node / JS (if you add tools later)
+# ===========================================
+node_modules/
+dist/
+build/
+
+# ===========================================
+# Static folder (DO NOT IGNORE)
+# ===========================================
+# static/ contém seu frontend (HTML/CSS/JS)
+# então NÃO adicione a pasta static ao ignore!
