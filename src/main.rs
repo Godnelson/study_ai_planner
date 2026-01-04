@@ -93,17 +93,10 @@ struct ResponseContentItem {
 
 
 #[tokio::main]
-async fn main() {
-    if let Err(err) = run().await {
-        eprintln!("❌ Falha ao iniciar servidor: {err}");
-        std::process::exit(1);
-    }
-}
-
-async fn run() -> Result<()> {
-    println!("🧪 Inicializando servidor...");
+async fn main() -> Result<()> {
     dotenv().ok();
 
+    println!("🧪 Inicializando servidor...");
     println!("PORT = {:?}", env::var("PORT"));
 
     let port: u16 = env::var("PORT")
