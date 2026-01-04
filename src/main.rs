@@ -8,7 +8,6 @@ use serde_json::json;
 use std::env;
 use std::net::SocketAddr;
 use tower_http::services::ServeDir;
-use tokio::time::{sleep, Duration};
 /// Matéria vinda do frontend
 #[derive(Debug, Clone, Deserialize)]
 struct SubjectInput {
@@ -95,9 +94,9 @@ struct ResponseContentItem {
 
 #[tokio::main]
 async fn main() {
-    loop {
-        println!("🔥 STILL ALIVE");
-        sleep(Duration::from_secs(5)).await;
+    if let Err(err) = run().await {
+        eprintln!("❌ Falha ao iniciar servidor: {err}");
+        std::process::exit(1);
     }
 }
 
