@@ -8,7 +8,6 @@ use serde_json::json;
 use std::env;
 use std::net::SocketAddr;
 use tower_http::services::ServeDir;
-use tokio::time::{sleep, Duration};
 /// Matéria vinda do frontend
 #[derive(Debug, Clone, Deserialize)]
 struct SubjectInput {
@@ -94,23 +93,18 @@ struct ResponseContentItem {
 
 
 #[tokio::main]
-async fn main() {
-    loop {
-        println!("🔥 STILL ALIVE");
-        sleep(Duration::from_secs(5)).await;
-    }
-}
-
-async fn run() -> Result<()> {
-    println!("🧪 Inicializando servidor...");
+async fn main() -> Result<()> {
     dotenv().ok();
 
+    println!("🧪 Inicializando servidor...");
     println!("PORT = {:?}", env::var("PORT"));
 
-    let port: u16 = env::var("PORT")
-        .unwrap_or_else(|_| "3000".to_string())
-        .parse()
-        .unwrap_or(3000);
+    let mut port: u16 = 10000;
+    if let Ok(port_var) = env::var("PORT") {
+        if let Ok(parsed) = port_var.parse() {
+            port = parsed;
+        }
+    }
 
     let api_router = Router::new().route("/api/plan", post(create_plan_handler));
     let app = Router::new()
@@ -119,9 +113,18 @@ async fn run() -> Result<()> {
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     println!("🚀 Servindo em http://{addr}");
+    println!("📁 CWD = {:?}", env::current_dir());
 
-    let listener = tokio::net::TcpListener::bind(addr).await?;
-    axum::serve(listener, app).await?;
+    let listener = tokio::net::TcpListener::bind(addr).await.map_err(|err| {
+        eprintln!("❌ Falha ao fazer bind em {addr}: {err}");
+        err
+    })?;
+    println!("✅ Listener pronto em {addr}");
+
+    axum::serve(listener, app).await.map_err(|err| {
+        eprintln!("❌ Erro ao servir em {addr}: {err}");
+        err
+    })?;
 
     Ok(())
 }
