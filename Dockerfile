@@ -35,4 +35,4 @@ RUN chmod +x /app/study_ai_planner
 
 EXPOSE 10000
 
-CMD ["/app/study_ai_planner"]
+ENTRYPOINT ["/app/study_ai_planner"]

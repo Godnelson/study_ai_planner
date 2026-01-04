@@ -6,6 +6,7 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::env;
+use std::io::{self, Write};
 use std::net::SocketAddr;
 use tower_http::services::ServeDir;
 /// Matéria vinda do frontend
@@ -94,6 +95,8 @@ struct ResponseContentItem {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    eprintln!("🚀 Booting server...");
+    let _ = io::stderr().flush();
     dotenv().ok();
 
     println!("🧪 Inicializando servidor...");
