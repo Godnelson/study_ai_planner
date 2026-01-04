@@ -13,5 +13,10 @@ else
   echo ">>> LDD not available"
 fi
 
+export RUST_BACKTRACE=1
+
 echo ">>> EXEC /app/study_ai_planner"
-exec /app/study_ai_planner
+/app/study_ai_planner
+ec=$?
+echo ">>> SERVER EXITED WITH CODE ${ec}"
+exit "${ec}"
