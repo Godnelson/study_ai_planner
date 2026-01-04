@@ -22,7 +22,7 @@ RUN cargo build --release
 FROM debian:bookworm-slim AS runtime
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
+    && apt-get install -y --no-install-recommends ca-certificates libssl3 \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
 
@@ -33,7 +33,6 @@ COPY --from=builder /build/static /app/static
 
 RUN chmod +x /app/study_ai_planner
 
-ENV PORT=3000
-EXPOSE 3000
+EXPOSE 10000
 
 CMD ["/app/study_ai_planner"]

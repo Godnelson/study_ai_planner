@@ -99,10 +99,12 @@ async fn main() -> Result<()> {
     println!("🧪 Inicializando servidor...");
     println!("PORT = {:?}", env::var("PORT"));
 
-    let port: u16 = env::var("PORT")
-        .unwrap_or_else(|_| "3000".to_string())
-        .parse()
-        .unwrap_or(3000);
+    let mut port: u16 = 10000;
+    if let Ok(port_var) = env::var("PORT") {
+        if let Ok(parsed) = port_var.parse() {
+            port = parsed;
+        }
+    }
 
     let api_router = Router::new().route("/api/plan", post(create_plan_handler));
     let app = Router::new()
