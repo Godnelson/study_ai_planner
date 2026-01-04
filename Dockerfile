@@ -30,9 +30,11 @@ WORKDIR /app
 
 COPY --from=builder /build/target/release/study_ai_planner /app/study_ai_planner
 COPY --from=builder /build/static /app/static
+COPY entrypoint.sh /app/entrypoint.sh
 
 RUN chmod +x /app/study_ai_planner
+RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 10000
 
-ENTRYPOINT ["/app/study_ai_planner"]
+ENTRYPOINT ["/app/entrypoint.sh"]
