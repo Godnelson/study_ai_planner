@@ -1,15 +1,15 @@
 # ============================
 # Stage 1: build do binário
 # ============================
-FROM rust:1.85 as builder
+FROM rust:1.85 AS builder
 
 WORKDIR /build
 
 COPY Cargo.toml Cargo.lock* ./
 
-RUN mkdir src \
+RUN mkdir -p src \
     && echo "fn main() {}" > src/main.rs \
-    && cargo build --release || true
+    && cargo fetch
 
 COPY src ./src
 COPY static ./static
