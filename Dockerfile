@@ -7,9 +7,7 @@ WORKDIR /build
 
 COPY Cargo.toml Cargo.lock* ./
 
-RUN mkdir src \
-    && echo "fn main() {}" > src/main.rs \
-    && cargo build --release || true
+RUN cargo fetch
 
 COPY src ./src
 COPY static ./static
