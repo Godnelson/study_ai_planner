@@ -36,5 +36,4 @@ RUN chmod +x /app/study_ai_planner
 ENV PORT=3000
 EXPOSE 3000
 
-# 👇 CMD de debug hardcore
-CMD ["sh", "-lc", "echo '>>> CONTAINER SUBIU'; echo '>>> PORT='$PORT; echo '>>> LS /app'; ls -l /app; echo '>>> RODANDO BINARIO'; /app/study_ai_planner; EC=$?; echo '>>> BINARIO SAIU COM EXIT CODE '$EC; sleep 300"]
+CMD ["/app/study_ai_planner"]
