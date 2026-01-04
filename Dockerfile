@@ -22,7 +22,7 @@ RUN cargo build --release
 FROM debian:bookworm-slim AS runtime
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
+    && apt-get install -y --no-install-recommends ca-certificates libssl3 \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
 
@@ -30,11 +30,11 @@ WORKDIR /app
 
 COPY --from=builder /build/target/release/study_ai_planner /app/study_ai_planner
 COPY --from=builder /build/static /app/static
+COPY entrypoint.sh /app/entrypoint.sh
 
 RUN chmod +x /app/study_ai_planner
+RUN chmod +x /app/entrypoint.sh
 
-ENV PORT=3000
-EXPOSE 3000
+EXPOSE 10000
 
-# 👇 CMD de debug hardcore
-CMD ["sh", "-lc", "echo '>>> CONTAINER SUBIU'; echo '>>> PORT='$PORT; echo '>>> LS /app'; ls -l /app; echo '>>> RODANDO BINARIO'; /app/study_ai_planner; EC=$?; echo '>>> BINARIO SAIU COM EXIT CODE '$EC; sleep 300"]
+ENTRYPOINT ["/app/entrypoint.sh"]
