@@ -113,9 +113,18 @@ async fn main() -> Result<()> {
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     println!("🚀 Servindo em http://{addr}");
+    println!("📁 CWD = {:?}", env::current_dir());
 
-    let listener = tokio::net::TcpListener::bind(addr).await?;
-    axum::serve(listener, app).await?;
+    let listener = tokio::net::TcpListener::bind(addr).await.map_err(|err| {
+        eprintln!("❌ Falha ao fazer bind em {addr}: {err}");
+        err
+    })?;
+    println!("✅ Listener pronto em {addr}");
+
+    axum::serve(listener, app).await.map_err(|err| {
+        eprintln!("❌ Erro ao servir em {addr}: {err}");
+        err
+    })?;
 
     Ok(())
 }
